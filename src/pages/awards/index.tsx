@@ -1,9 +1,18 @@
 import { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 import { useNavigate } from "react-router-dom";
+import {
+  JacobBustamante,
+  JaredPasion,
+  KurtPasion,
+  JusticeHowino,
+  DylanPagaduan,
+  ShaunFloro,
+} from "../../utils/players";
 
 type AwardKey = "mvp" | "opoy" | "dpoy" | "cpoy" | "mip" | "sixth" | "moment";
 type Tier = 1 | 2 | 3 | 4;
+type Season = "2k23" | "2k24" | "2k25";
 
 interface AwardDef {
   key: AwardKey;
@@ -20,6 +29,8 @@ interface AwardData {
   runnerUpName?: string;
 }
 
+const SEASONS: Season[] = ["2k23", "2k24", "2k25"];
+
 const AWARDS: AwardDef[] = [
   { key: "mvp", label: "Most Valuable Player", tier: 1 },
   { key: "opoy", label: "Offensive Player of The Year", tier: 2 },
@@ -30,59 +41,79 @@ const AWARDS: AwardDef[] = [
   { key: "moment", label: "Moment of The Year", tier: 4 },
 ];
 
+const DATA_2K23: Partial<Record<AwardKey, AwardData>> = {
+  mvp: {
+    playerName: JacobBustamante.name,
+    username: JacobBustamante.ign,
+    imageUrl: "./2k23/awards/mvp.png",
+    votesReceived: 6,
+    totalVoters: 6,
+  },
+};
+
+const DATA_2K24: Partial<Record<AwardKey, AwardData>> = {
+  mvp: {
+    playerName: KurtPasion.name,
+    username: KurtPasion.ign,
+    imageUrl: "./2k24/awards/mvp.png",
+    votesReceived: 7,
+    totalVoters: 7,
+  },
+};
+
+// Your full 2K25 data (unchanged)
 const DATA_2K25: Record<AwardKey, AwardData> = {
   mvp: {
-    playerName: "Jared Pasion",
-    username: "CxnkleBreakr22",
+    playerName: JaredPasion.name,
+    username: JaredPasion.ign,
     imageUrl: "./2k25/awards/mvp.png",
     votesReceived: 6,
     totalVoters: 7,
-    runnerUpName: "1 Vote - Jacob Bustamante (LeKINGGG)",
+    runnerUpName: `1 Vote - ${JacobBustamante.name} (${JacobBustamante.ign})`,
   },
   opoy: {
-    playerName: "Justice Howe",
-    username: "Howino",
+    playerName: JusticeHowino.name,
+    username: JusticeHowino.ign,
     imageUrl: "./2k25/awards/opoy.png",
     votesReceived: 5,
     totalVoters: 7,
-    runnerUpName:
-      "1 Vote - Jared Pasion (CxnkleBreakr22) & Kurt Pasion (Sloppenheimerrr)",
+    runnerUpName: `1 Vote - ${JaredPasion.name} (${JaredPasion.ign}) & ${KurtPasion.name} (${KurtPasion.ign})`,
   },
   dpoy: {
-    playerName: "Jared Pasion",
-    username: "CxnkleBreakr22",
+    playerName: JaredPasion.name,
+    username: JaredPasion.ign,
     imageUrl: "./2k25/awards/dpoy.png",
     votesReceived: 4,
     totalVoters: 7,
-    runnerUpName: "2 Votes - Dylan Pagaduan (temp-4703017)",
+    runnerUpName: `2 Votes - ${DylanPagaduan.name} (${DylanPagaduan.ign})`,
   },
   cpoy: {
-    playerName: "Shaun Floro",
-    username: "LeCreammy",
+    playerName: ShaunFloro.name,
+    username: ShaunFloro.ign,
     imageUrl: "./2k25/awards/cpoy.png",
     votesReceived: 3,
     totalVoters: 7,
-    runnerUpName: "3 Votes & Lost Tie Breaker - Jared Pasion (CxnkleBreakr22)",
+    runnerUpName: `3 Votes & Lost Tie Breaker - ${JaredPasion.name} (${JaredPasion.ign})`,
   },
   mip: {
-    playerName: "Dylan Pagaduan",
-    username: "temp-4703017",
+    playerName: DylanPagaduan.name,
+    username: DylanPagaduan.ign,
     imageUrl: "./2k25/awards/mip.png",
     votesReceived: 3,
     totalVoters: 4,
-    runnerUpName: "1 Vote - Jacob Bustamante (LeKINGGG)",
+    runnerUpName: `1 Vote - ${JacobBustamante.name} (${JacobBustamante.ign})`,
   },
   sixth: {
-    playerName: "Kurt Pasion",
-    username: "Sloppenheimerrr",
+    playerName: KurtPasion.name,
+    username: KurtPasion.ign,
     imageUrl: "./2k25/awards/6moy.png",
     votesReceived: 4,
     totalVoters: 7,
-    runnerUpName: "2 Votes - Dylan Pagaduan (temp-4703017)",
+    runnerUpName: `2 Votes - ${DylanPagaduan.name} (${DylanPagaduan.ign})`,
   },
   moment: {
-    playerName: "Jacob Bustamante",
-    username: "LeKINGGG",
+    playerName: JacobBustamante.name,
+    username: JacobBustamante.ign,
     imageUrl: "./2k25/awards/moy.png",
     votesReceived: 4,
     totalVoters: 7,
@@ -90,56 +121,109 @@ const DATA_2K25: Record<AwardKey, AwardData> = {
   },
 };
 
+const DATA_BY_SEASON: Record<Season, Partial<Record<AwardKey, AwardData>>> = {
+  // "2k20": DATA_2K20,
+  // "2k21": DATA_2K21,
+  // "2k22": DATA_2K22,
+  "2k23": DATA_2K23,
+  "2k24": DATA_2K24,
+  "2k25": DATA_2K25,
+};
+
 export default function AwardHistory() {
-  const data = DATA_2K25;
+  const [season, setSeason] = useState<Season>("2k25");
+  const data = DATA_BY_SEASON[season];
   const navigate = useNavigate();
+
+  const isPre2k25 = season === "2k23" || season === "2k24";
 
   return (
     <div className="min-h-screen flex flex-col bg-black-950 text-white">
       <Navbar />
       <main className="mx-auto w-full max-w-5xl px-4 py-6">
-        <button
-          onClick={() => navigate("/")}
-          className="mb-4 text-sm text-red-500 hover:underline"
-        >
-          ← Back
-        </button>
+        <div className="flex items-center justify-between mb-4">
+          <button
+            onClick={() => navigate("/")}
+            className="text-sm text-red-500 hover:underline"
+          >
+            ← Back
+          </button>
+
+          {/* Season Switcher */}
+          <label className="flex items-center gap-2 text-sm">
+            <span className="text-black-300">Season</span>
+            <select
+              className="bg-black-900 border border-black-800 rounded-lg px-2 py-1 text-white"
+              value={season}
+              onChange={(e) => setSeason(e.target.value as Season)}
+            >
+              {SEASONS.map((s) => (
+                <option key={s} value={s}>
+                  {s.toUpperCase()}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
         <div className="flex items-center gap-2 mb-6">
           <img src="/logo.png" alt="Le2KAwards logo" className="h-8 w-auto" />
           <div>
             <h1 className="text-xl md:text-2xl font-extrabold">
               Award History
             </h1>
-            <p className="text-black-300 text-sm">Season: 2K25</p>
+            <p className="text-black-300 text-sm">
+              Season: {season.toUpperCase()}
+            </p>
           </div>
         </div>
-        <TierSection title="MVP" description="Most Valuable Player of NBA2K25">
+
+        {/* MVP always shown */}
+        <TierSection
+          title="MVP"
+          description={`Most Valuable Player of ${season.toUpperCase()}`}
+        >
           <AwardRow
             awards={AWARDS.filter((a) => a.key === "mvp")}
             data={data}
             compactFull
           />
         </TierSection>
-        <TierSection
-          title="Tier 2"
-          description="The best players on each side of the court"
-        >
-          <AwardRow awards={AWARDS.filter((a) => a.tier === 2)} data={data} />
-        </TierSection>
-        <TierSection title="Tier 3" description="Key contributors">
-          <AwardRow awards={AWARDS.filter((a) => a.tier === 3)} data={data} />
-        </TierSection>
-        <TierSection
-          title="Moment of The Year"
-          description="Unforgettable single moment."
-        >
-          <AwardRow
-            awards={AWARDS.filter((a) => a.key === "moment")}
-            data={data}
-            compactFull
-          />
-        </TierSection>
+
+        {/* Tiers only for seasons 2K25 and later */}
+        {!isPre2k25 && (
+          <>
+            <TierSection
+              title="Tier 2"
+              description="The best players on each side of the court"
+            >
+              <AwardRow
+                awards={AWARDS.filter((a) => a.tier === 2)}
+                data={data}
+              />
+            </TierSection>
+
+            <TierSection title="Tier 3" description="Key contributors">
+              <AwardRow
+                awards={AWARDS.filter((a) => a.tier === 3)}
+                data={data}
+              />
+            </TierSection>
+
+            <TierSection
+              title="Moment of The Year"
+              description="Unforgettable single moment."
+            >
+              <AwardRow
+                awards={AWARDS.filter((a) => a.key === "moment")}
+                data={data}
+                compactFull
+              />
+            </TierSection>
+          </>
+        )}
       </main>
+
       <footer className="bg-black-900 border-t border-black-800 text-center text-[10px] text-black-400 py-3 mt-3">
         © {new Date().getFullYear()} Le2KAwards by Daniel Pasion
       </footer>
@@ -174,22 +258,33 @@ function AwardRow({
   subLabel,
 }: {
   awards: AwardDef[];
-  data: Record<AwardKey, AwardData>;
+  data: Partial<Record<AwardKey, AwardData>>;
   compactFull?: boolean;
   subLabel?: string;
 }) {
+  // Only render cards for awards that exist in this season's data
+  const awardsWithData = awards.filter((a) => !!data[a.key]);
+
+  if (awardsWithData.length === 0) {
+    return (
+      <div className="text-xs text-black-400 border border-dashed border-black-800 rounded-lg p-3">
+        No awards recorded for this section.
+      </div>
+    );
+  }
+
   const cols =
-    awards.length === 1
+    awardsWithData.length === 1
       ? "grid-cols-1"
       : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3";
 
   return (
     <div className={`grid ${cols} gap-4`}>
-      {awards.map((a) => (
+      {awardsWithData.map((a) => (
         <AwardCard
           key={a.key}
           label={a.label}
-          data={data[a.key]}
+          data={data[a.key]!}
           compactFull={compactFull && (a.key === "mvp" || a.key === "moment")}
           subLabel={subLabel}
         />

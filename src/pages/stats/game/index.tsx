@@ -114,7 +114,11 @@ export default function StatsGameIndex() {
               <thead className="bg-black-900/80">
                 <tr className="[&>th]:px-3 [&>th]:py-2 text-black-300 whitespace-nowrap">
                   <th className="min-w-[180px]">Player</th>
-
+                  <Th
+                    label="GP"
+                    icon={sortIcon("gp")}
+                    onClick={() => handleSort("gp")}
+                  />
                   <Th
                     label="PPG"
                     icon={sortIcon("ppg")}
@@ -207,6 +211,7 @@ export default function StatsGameIndex() {
                         </div>
                       </div>
                     </td>
+                    <Td num={stats?.gp} />
                     <Td num={stats?.ppg} />
                     <Td num={stats?.rpg} />
                     <Td num={stats?.apg} />

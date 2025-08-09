@@ -22,7 +22,7 @@ export default function MeetDeveloper() {
           <img
             src="/dev.png" // your single portrait
             alt="Developer headshot"
-            className="h-40 w-40 rounded-2xl border border-black-700 object-cover bg-black-800/60"
+            className="h-40 w-40 rounded-2xl border border-black-700 object-contain bg-black-800/60"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).style.display = "none";
             }}
