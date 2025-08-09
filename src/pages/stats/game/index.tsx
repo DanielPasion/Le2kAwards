@@ -238,7 +238,7 @@ export default function StatsGameIndex() {
       </main>
 
       <footer className="bg-black-900 border-t border-black-800 text-center text-[10px] text-black-400 py-3">
-        © {new Date().getFullYear()} Le2KAwards by Daniel Pasion
+        © {new Date().getFullYear()} Le2KAwards
       </footer>
     </div>
   );

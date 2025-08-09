@@ -39,7 +39,7 @@ export default function StatsPlayerIndex() {
   const navigate = useNavigate();
 
   return (
-    <div className="h-screen flex flex-col bg-black-950 text-white">
+    <div className="h-auto flex flex-col bg-black-950 text-white">
       <Navbar />
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 relative">
@@ -76,7 +76,7 @@ export default function StatsPlayerIndex() {
         </div>
       </main>
 
-      <footer className="bg-black-900 border-t border-black-800 text-center text-[10px] text-black-400 py-3">
+      <footer className="bg-black-900 border-t border-black-800 text-center text-[10px] text-black-400 py-3 mt-3">
         © {new Date().getFullYear()} Le2KAwards by Daniel Pasion
       </footer>
     </div>

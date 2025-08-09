@@ -33,9 +33,8 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="bg-black-900 border-t border-black-800 text-center text-xs text-black-400 py-4">
-        © {new Date().getFullYear()} Le2KAwards by Daniel Pasion by Daniel
-        Pasion
+      <footer className="bg-black-900 border-t border-black-800 text-center text-xs text-black-400 py-4 mt-3">
+        © {new Date().getFullYear()} Le2KAwards by Daniel Pasion Pasion
       </footer>
     </div>
   );
