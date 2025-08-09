@@ -6,6 +6,7 @@ import StatsGameIndex from "./pages/stats/game";
 import StatsPlayerIndex from "./pages/stats/player";
 import StatsPlayerID from "./pages/stats/player/id";
 import ComparisonIndex from "./pages/comparison";
+import MeetDeveloper from "./pages/developer";
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
       <Route path="comparison">
         <Route index element={<ComparisonIndex />} />
       </Route>
+      <Route path="developer" element={<MeetDeveloper />} />
     </Routes>
   );
 }

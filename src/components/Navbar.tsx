@@ -19,6 +19,7 @@ export default function Navbar() {
           <NavLink to="/awards">Award History</NavLink>
           <NavLink to="/stats">Stats</NavLink>
           <NavLink to="/comparison">Player Comparisons</NavLink>
+          <NavLink to="/developer">Meet the Developer</NavLink>{" "}
         </div>
 
         {/* Mobile menu button */}
@@ -42,6 +43,9 @@ export default function Navbar() {
           </NavLink>
           <NavLink to="/comparison" onClick={() => setMenuOpen(false)}>
             Player Comparisons
+          </NavLink>
+          <NavLink to="/developer" onClick={() => setMenuOpen(false)}>
+            Meet the Developer
           </NavLink>
         </div>
       )}
