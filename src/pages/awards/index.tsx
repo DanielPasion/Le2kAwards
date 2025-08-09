@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
+import { useNavigate } from "react-router-dom";
 
 type AwardKey = "mvp" | "opoy" | "dpoy" | "cpoy" | "mip" | "sixth" | "moment";
 type Tier = 1 | 2 | 3 | 4;
@@ -91,11 +92,18 @@ const DATA_2K25: Record<AwardKey, AwardData> = {
 
 export default function AwardHistory() {
   const data = DATA_2K25;
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex flex-col bg-black-950 text-white">
       <Navbar />
       <main className="mx-auto w-full max-w-5xl px-4 py-6">
+        <button
+          onClick={() => navigate("/")}
+          className="mb-4 text-sm text-red-500 hover:underline"
+        >
+          ← Back
+        </button>
         <div className="flex items-center gap-2 mb-6">
           <img src="/logo.png" alt="Le2KAwards logo" className="h-8 w-auto" />
           <div>
