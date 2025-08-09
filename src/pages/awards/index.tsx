@@ -1,4 +1,4 @@
-// src/pages/AwardHistory.tsx
+import { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 
 type AwardKey = "mvp" | "opoy" | "dpoy" | "cpoy" | "mip" | "sixth" | "moment";
@@ -95,9 +95,7 @@ export default function AwardHistory() {
   return (
     <div className="min-h-screen flex flex-col bg-black-950 text-white">
       <Navbar />
-
       <main className="mx-auto w-full max-w-5xl px-4 py-6">
-        {/* Header */}
         <div className="flex items-center gap-2 mb-6">
           <img src="/logo.png" alt="Le2KAwards logo" className="h-8 w-auto" />
           <div>
@@ -107,8 +105,6 @@ export default function AwardHistory() {
             <p className="text-black-300 text-sm">Season: 2K25</p>
           </div>
         </div>
-
-        {/* MVP (compact height, full width) */}
         <TierSection title="MVP" description="Most Valuable Player of NBA2K25">
           <AwardRow
             awards={AWARDS.filter((a) => a.key === "mvp")}
@@ -116,21 +112,15 @@ export default function AwardHistory() {
             compactFull
           />
         </TierSection>
-
-        {/* Tier 2 */}
         <TierSection
           title="Tier 2"
           description="The best players on each side of the court"
         >
           <AwardRow awards={AWARDS.filter((a) => a.tier === 2)} data={data} />
         </TierSection>
-
-        {/* Tier 3 */}
         <TierSection title="Tier 3" description="Key contributors">
           <AwardRow awards={AWARDS.filter((a) => a.tier === 3)} data={data} />
         </TierSection>
-
-        {/* Moment (compact height, full width) */}
         <TierSection
           title="Moment of The Year"
           description="Unforgettable single moment."
@@ -142,15 +132,12 @@ export default function AwardHistory() {
           />
         </TierSection>
       </main>
-
       <footer className="bg-black-900 border-t border-black-800 text-center text-[10px] text-black-400 py-3">
         © {new Date().getFullYear()} Le2KAwards
       </footer>
     </div>
   );
 }
-
-/* ========== Components ========== */
 
 function TierSection({
   title,
@@ -180,10 +167,9 @@ function AwardRow({
 }: {
   awards: AwardDef[];
   data: Record<AwardKey, AwardData>;
-  compactFull?: boolean; // new: shrink height but keep full width
+  compactFull?: boolean;
   subLabel?: string;
 }) {
-  // When there's a single award (MVP or Moment), keep it full width in the grid.
   const cols =
     awards.length === 1
       ? "grid-cols-1"
@@ -215,6 +201,8 @@ function AwardCard({
   compactFull?: boolean;
   subLabel: string | undefined;
 }) {
+  const [open, setOpen] = useState(false);
+
   const pct =
     data.totalVoters > 0
       ? Math.min(100, Math.round((data.votesReceived / data.totalVoters) * 100))
@@ -226,7 +214,6 @@ function AwardCard({
         compactFull ? "p-3" : "p-4"
       }`}
     >
-      {/* Title */}
       <div className={compactFull ? "mb-2" : "mb-3"}>
         <h3
           className={
@@ -238,15 +225,21 @@ function AwardCard({
         <p className="text-xs text-black-300">{subLabel}</p>
       </div>
 
-      {/* Image (shorter height for compact full-width cards) */}
       {data.imageUrl ? (
-        <img
-          src={data.imageUrl}
-          alt={`${label} graphic`}
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
           className={`w-full ${
             compactFull ? "aspect-[16/5]" : "aspect-[16/9]"
-          } object-contain rounded-lg border border-black-800`}
-        />
+          } rounded-lg border border-black-800 overflow-hidden group cursor-zoom-in`}
+          aria-label={`Open full-screen image for ${label}`}
+        >
+          <img
+            src={data.imageUrl}
+            alt={`${label} graphic`}
+            className="h-full w-full object-contain transition group-hover:scale-[1.01]"
+          />
+        </button>
       ) : (
         <div
           className={`w-full ${
@@ -259,7 +252,6 @@ function AwardCard({
         </div>
       )}
 
-      {/* Player info */}
       <div className={compactFull ? "mt-2 space-y-1" : "mt-3 space-y-1"}>
         <div className="text-xs text-black-300">Full Name</div>
         <div className={compactFull ? "text-sm" : "text-sm font-semibold"}>
@@ -274,7 +266,6 @@ function AwardCard({
         <div className="text-sm">{data.username}</div>
       </div>
 
-      {/* Voting info */}
       <div className={compactFull ? "mt-2" : "mt-3"}>
         <div className="flex items-center justify-between text-xs">
           <span className="text-black-300">Votes</span>
@@ -298,12 +289,72 @@ function AwardCard({
         </div>
       </div>
 
-      {/* Runner-up */}
       {data.runnerUpName && (
         <div className="mt-2 text-[11px] text-black-400">
           Runner-up: {data.runnerUpName}
         </div>
       )}
+
+      {data.imageUrl && (
+        <ImageModal
+          open={open}
+          onClose={() => setOpen(false)}
+          src={data.imageUrl}
+          alt={`${label} graphic full-screen`}
+        />
+      )}
+    </div>
+  );
+}
+
+function ImageModal({
+  open,
+  onClose,
+  src,
+  alt,
+}: {
+  open: boolean;
+  onClose: () => void;
+  src: string;
+  alt: string;
+}) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black-900/80"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Full-screen image viewer"
+      onClick={onClose}
+    >
+      <div className="relative mx-4" onClick={(e) => e.stopPropagation()}>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close full-screen image"
+          className="absolute -top-5 right-0 rounded-full bg-black-800/80 px-3 py-1 text-white text-sm border border-black-700 hover:bg-black-700"
+        >
+          ✕
+        </button>
+        <img
+          src={src}
+          alt={alt}
+          className="max-h-[90vh] max-w-[90vw] rounded-xl border border-black-700 object-contain"
+        />
+      </div>
     </div>
   );
 }
